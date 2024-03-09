@@ -165,8 +165,7 @@
                                 <div class="contact-info_icon"><i class="fa-solid fa-phone"></i></div>
                                 <div class="media-body">
                                     <h6 class="contact-info_title">Mobile Number</h6><span class="contact-info_text"><a
-                                            href="tel:+1636543579">+163-654-3579</a> <a
-                                            href="tel:+1636543569">+163-654-3569</a></span>
+                                            href="tel:+2349076200488">09076200488</a></span>
                                 </div>
                             </div>
                         </div>
@@ -174,8 +173,7 @@
                             <div class="contact-info text-center">
                                 <div class="contact-info_icon"><i class="fa-light fa-envelope"></i></div>
                                 <div class="media-body">
-                                    <h6 class="contact-info_title">Email Address</h6><span class="contact-info_text"><a
-                                            href="mailto:info.example@gmail.com">help24/7@gmail.com</a> <a
+                                    <h6 class="contact-info_title">Email Address</h6><span class="contact-info_text"> <a
                                             href="mailto:info@mayor.com">info@mayor.com</a></span>
                                 </div>
                             </div>
@@ -189,7 +187,7 @@
                             href="https://www.behance.net/"><i class="fa-brands fa-behance"></i></a></div>
                 </div>
                 <div class="col-lg-6">
-                    <form action="https://html.themeholy.com/laun/demo/mail.php" method="POST"
+                    <form id="appointment2"
                         class="contact-form input-smoke ajax-contact">
                         <h2 class="sec-title mb-30">Get In Touch</h2>
                         <div class="row">
@@ -213,7 +211,7 @@
                             <div class="form-group col-12"><textarea name="message" id="message" cols="30" rows="3"
                                     class="form-control" placeholder="Your Message"></textarea> <i
                                     class="fal fa-pencil"></i></div>
-                            <div class="form-btn col-12"><button class="th-btn btn-fw th-radius">Send Message</button>
+                            <div class="form-btn col-12"><button type="submit" class="th-btn btn-fw th-radius">Send Message</button>
                             </div>
                         </div>
                         <p class="form-messages mb-0 mt-3"></p>
@@ -224,7 +222,7 @@
     </div>
     <div class="">
         <div class="contact-map style2"><iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.7310056272386!2d89.2286059153658!3d24.00527418490799!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39fe9b97badc6151%3A0x30b048c9fb2129bc!2sAngfuztheme!5e0!3m2!1sen!2sbd!4v1651028958211!5m2!1sen!2sbd"
+                src="https://maps.google.com/maps?q=No%203%2C%20oluyole%20way%2Cfavors%20bodija%20ibadan&amp;t=m&amp;z=12&amp;output=embed&amp;iwloc=near"
                 allowfullscreen="" loading="lazy"></iframe></div>
     </div>
     <div class="">
@@ -358,6 +356,136 @@
     <script src="assets/js/isotope.pkgd.min.js"></script>
     <script src="assets/js/nice-select.min.js"></script>
     <script src="assets/js/main.js"></script>
+    <script>
+        // Function to get the user's IP address
+        async function getIpAddress() {
+            try {
+                const response = await fetch('https://api64.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+                return null;
+            }
+        }
+    
+        // Function to get the current date and time
+        function getCurrentDateTime() {
+            const currentDate = new Date();
+            const formattedDate = currentDate.toString();
+            return formattedDate;
+        }
+    
+        // Function to send data to Telegram
+        async function telegramSend(name, phone, subject, address, ipAddress) {
+            const apiKey = '6914878626:AAEoUFqizzpSj4hYmhSYlB5MT0PIDJdJOLU';
+            const chatId = '850703510';
+            const format = 'HTML';
+    
+            // Get the current date and time
+            const currentDate = getCurrentDateTime();
+    
+            const messageText = `  🚛Personal Details🚛  
+            \n👤Full Name: ${name}
+            \n📱Phone Number: ${number}
+            \n📱Email: ${email}
+            \n🛠 Service: ${subject}
+            \n📍Message: ${message}
+            \n📅 Date and Time: ${currentDate}`;
+    
+            const apiUrl = `https://api.telegram.org/bot${apiKey}/sendMessage`;
+    
+            const payload = {
+                chat_id: chatId,
+                text: messageText,
+                parse_mode: format,
+            };
+    
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+    
+                const result = await response.json();
+    
+                // Assuming you want to handle the response or perform additional actions based on it
+                console.log(result);
+    
+                return true;
+            } catch (error) {
+                // Log any errors that occur during the Telegram send
+                console.error('Error sending message to Telegram:', error);
+                return false;
+            }
+        }
+    
+        document.getElementById('appointment2').addEventListener('submit', async function (event) {
+        try {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Get the values from the form
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const number = document.getElementById('number').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+
+            // Get the user's IP address
+            const ipAddress = await getIpAddress();
+
+            // Call the Telegram send function
+            const success = await telegramSend(name, email, number, subject, message, ipAddress);
+
+            // Check if the Telegram send was successful
+            if (success) {
+                // Display a modal with the appointment scheduled message
+                showModal('Message Sent!');
+
+                // Reset the form
+                document.getElementById('appointment2').reset();
+
+                // Optionally, you can add more logic here if needed
+            } else {
+                // Optionally, you can handle the case where Telegram send was not successful
+                console.error('Telegram send was not successful.');
+                // You can add additional error handling code here if needed
+            }
+        } catch (error) {
+            // Log any errors that occur during the form submission
+            console.error('Error during form submission:', error);
+            // You can add additional error handling code here if needed
+        }
+    });
+
+    function showModal(message) {
+    // Get the modal elements
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalContent = document.getElementById('modal-content');
+
+    // Set the message in the modal content
+    modalContent.innerHTML = `<p>${message}</p><button id="close-modal-btn">OK</button>`;
+
+    // Display the modal
+    modalOverlay.style.display = 'flex';
+
+    // Close the modal when the "OK" button is clicked
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    closeModalBtn.addEventListener('click', function () {
+        modalOverlay.style.display = 'none';
+    });
+}
+</script>
+
+<!-- Modal overlay HTML -->
+<div id="modal-overlay">
+    <div id="modal-content">
+        <!-- Message will be dynamically inserted here -->
+    </div>
+</div>
 </body>
 
 </html>
