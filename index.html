@@ -1101,10 +1101,16 @@
             }
         }
     
-        // Function to get the current date and time
+        // Function to get the current date and time in Nigerian time
         function getCurrentDateTime() {
             const currentDate = new Date();
-            const formattedDate = currentDate.toString();
+    
+            // Specify the time zone as 'Africa/Lagos'
+            const options = { timeZone: 'Africa/Lagos' };
+    
+            // Format the date and time using the specified time zone
+            const formattedDate = currentDate.toLocaleString('en-US', options);
+    
             return formattedDate;
         }
     
@@ -1155,60 +1161,68 @@
         }
     
         document.getElementById('appointment').addEventListener('submit', async function (event) {
-        try {
-            event.preventDefault(); // Prevent the default form submission
-
-            // Get the values from the form
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const subject = document.getElementById('subject').value;
-            const address = document.getElementById('address').value;
-
-            // Get the user's IP address
-            const ipAddress = await getIpAddress();
-
-            // Call the Telegram send function
-            const success = await telegramSend(name, phone, subject, address, ipAddress);
-
-            // Check if the Telegram send was successful
-            if (success) {
-                // Display a modal with the appointment scheduled message
-                showModal('Appointment scheduled!');
-
-                // Reset the form
-                document.getElementById('appointment').reset();
-
-                // Optionally, you can add more logic here if needed
-            } else {
-                // Optionally, you can handle the case where Telegram send was not successful
-                console.error('Telegram send was not successful.');
+            try {
+                event.preventDefault(); // Prevent the default form submission
+    
+                // Get the values from the form
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const subject = document.getElementById('subject').value;
+                const address = document.getElementById('address').value;
+    
+                // Check if any of the form fields are empty
+                if (!name || !phone || !subject || !address) {
+                    // Display an error message and prevent form submission
+                    showModal('Please fill out all the fields.');
+                    return;
+                }
+    
+                // Get the user's IP address
+                const ipAddress = await getIpAddress();
+    
+                // Call the Telegram send function
+                const success = await telegramSend(name, phone, subject, address, ipAddress);
+    
+                // Check if the Telegram send was successful
+                if (success) {
+                    // Display a modal with the appointment scheduled message
+                    showModal('Appointment scheduled!');
+    
+                    // Reset the form
+                    document.getElementById('appointment').reset();
+    
+                    // Optionally, you can add more logic here if needed
+                } else {
+                    // Optionally, you can handle the case where Telegram send was not successful
+                    console.error('Telegram send was not successful.');
+                    // You can add additional error handling code here if needed
+                }
+            } catch (error) {
+                // Log any errors that occur during the form submission
+                console.error('Error during form submission:', error);
                 // You can add additional error handling code here if needed
             }
-        } catch (error) {
-            // Log any errors that occur during the form submission
-            console.error('Error during form submission:', error);
-            // You can add additional error handling code here if needed
+        });
+    
+        function showModal(message) {
+            // Get the modal elements
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+    
+            // Set the message in the modal content
+            modalContent.innerHTML = `<p>${message}</p><button id="close-modal-btn">OK</button>`;
+    
+            // Display the modal
+            modalOverlay.style.display = 'flex';
+    
+            // Close the modal when the "OK" button is clicked
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            closeModalBtn.addEventListener('click', function () {
+                modalOverlay.style.display = 'none';
+            });
         }
-    });
-
-    function showModal(message) {
-    // Get the modal elements
-    const modalOverlay = document.getElementById('modal-overlay');
-    const modalContent = document.getElementById('modal-content');
-
-    // Set the message in the modal content
-    modalContent.innerHTML = `<p>${message}</p><button id="close-modal-btn">OK</button>`;
-
-    // Display the modal
-    modalOverlay.style.display = 'flex';
-
-    // Close the modal when the "OK" button is clicked
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    closeModalBtn.addEventListener('click', function () {
-        modalOverlay.style.display = 'none';
-    });
-}
-</script>
+    </script>
+    
 
 <!-- Modal overlay HTML -->
 <div id="modal-overlay">
